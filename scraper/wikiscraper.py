@@ -107,13 +107,5 @@ def main():
 			print 'url info : {}'.format(pid)
 			bfs_url(root_url, pid, 2, write_path)	
 
-			# TODO: print the text to a file
-
-			# print '\n'.join(para_data)
-
-			
-
-
-
 # main code starts here
 main()
