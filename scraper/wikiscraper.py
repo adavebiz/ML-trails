@@ -3,7 +3,7 @@ import lxml.etree
 import urllib
 from bs4 import BeautifulSoup
 import sys, traceback
-
+import os.path
 #authors: Vinit Gupta, Akshat Dave
 
 def is_valid_link(link):
@@ -36,6 +36,10 @@ def make_text_from_para_soup(para_soup):
 
 def write_to_file(write_filename, para_data):
 
+	if os.path.isfile(write_filename):
+		print 'file exists'
+		return
+	
 	fptr = open(write_filename,'w')
 	for line in para_data:
 		line_data = line+'\n'
@@ -43,10 +47,9 @@ def write_to_file(write_filename, para_data):
 	fptr.close()
 
 
-def bfs_url(root_url, page_url, level, write_text_path):
-	#TODO: make as params
-	
-	cat_name = 'legal_'
+def bfs_url(root_url, page_url, level, write_text_path, category):
+
+	cat_name = category+'_'
 	if level<=0:
 		# done with traveral 
 		return
@@ -74,7 +77,7 @@ def bfs_url(root_url, page_url, level, write_text_path):
 	for out_link in outgoing_links:
 		if is_valid_link(out_link):
 			print str(out_link.encode('utf8'))+'\n'
-			bfs_url(root_url, out_link, level-1, write_text_path)
+			bfs_url(root_url, out_link, level-1, write_text_path, cat_name)
 
 
 def get_links_from_paras(text_content):
@@ -109,16 +112,18 @@ def main():
 
 
 
-	categories = [
-	'/wiki/Category:Government'
-	]
+	cat_map = {
+	'legal': '/wiki/Category:Government',
+	'health': '/wiki/Category:Health'
+	} 
 
 	root_url = 'https://en.wikipedia.org'
 	write_path = '../../scrapedata'
-	for category in categories:
+	for category in cat_map:
 
-		subcat_links = get_links(root_url,category,tag_dict['subcats'])
-		subcat_links.append(category) # adding the category 
+		full_write_path = '/'.join([write_path,category])
+		subcat_links = get_links(root_url,cat_map[category],tag_dict['subcats'])
+		subcat_links.append(cat_map[category]) # adding the category 
 		# collect data for pages
 		for sid_url in subcat_links:
 			print 'subcat url info : {}'.format(sid_url)
@@ -138,7 +143,7 @@ def main():
 				if not is_valid_link(page_link):
 					continue
 				print 'url info : {}'.format(page_link)
-				bfs_url(root_url, page_link, 2, write_path)	
+				bfs_url(root_url, page_link, 2, full_write_path, category)	
 
 # main code starts here
 main()
