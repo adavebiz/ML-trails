@@ -6,10 +6,18 @@ import sys, traceback
 
 #authors: Vinit Gupta, Akshat Dave
 
-def get_links(category_url):
-	id_names = ['mw-pages'] #'mw-subcategories',
+def is_valid_link(link):
+	WIKI = '/wiki'
 
-	soup = get_url_data_soup(category_url)
+	if link.startswith(WIKI):
+		print 'Valid link = {}'.format(link)
+		return True
+	return False
+
+def get_links(root_url,category_url, tag_name):
+	id_names = [tag_name] #'mw-subcategories',
+
+	soup = get_url_data_soup(make_url(root_url,category_url))
 
 	link_entries = []
 	for id_name in id_names:
@@ -37,7 +45,7 @@ def write_to_file(write_filename, para_data):
 
 def bfs_url(root_url, page_url, level, write_text_path):
 	#TODO: make as params
-	WIKI = 'wiki'
+	
 	cat_name = 'legal_'
 	if level<=0:
 		# done with traveral 
@@ -64,10 +72,10 @@ def bfs_url(root_url, page_url, level, write_text_path):
 
 	
 	for out_link in outgoing_links:
-		if out_link.startswith(WIKI):
+		if is_valid_link(out_link):
 			print str(out_link.encode('utf8'))+'\n'
 			bfs_url(root_url, out_link, level-1, write_text_path)
-	
+
 
 def get_links_from_paras(text_content):
 
@@ -75,7 +83,8 @@ def get_links_from_paras(text_content):
 	for chunk in text_content:
 		links = chunk.findAll('a')
 		for a in links:
-			link_entries.append(a['href'])
+			if 'href' in a:
+				link_entries.append(a['href'])
 	return link_entries
 
 def get_url_data_soup(page_url):
@@ -91,21 +100,45 @@ def extract_text_content(page_url):
 	return body_data_soup
 
 
-
 # main code starts here
 def main():
+
+	tag_dict = {}
+	tag_dict['pages'] = 'mw-pages'
+	tag_dict['subcats'] = 'mw-subcategories'
+
+
+
 	categories = [
-	'https://en.wikipedia.org/wiki/Category:Government'
+	'/wiki/Category:Government'
 	]
 
 	root_url = 'https://en.wikipedia.org'
-	write_path = './scrapedata'
+	write_path = '../../scrapedata'
 	for category in categories:
-		page_links = get_links(category)
 
-		for pid in page_links:
-			print 'url info : {}'.format(pid)
-			bfs_url(root_url, pid, 2, write_path)	
+		subcat_links = get_links(root_url,category,tag_dict['subcats'])
+		subcat_links.append(category) # adding the category 
+		# collect data for pages
+		for sid_url in subcat_links:
+			print 'subcat url info : {}'.format(sid_url)
+			if not is_valid_link(sid_url):
+				print '{} *****invalid link'.format(sid_url)
+				continue
+			
+			#bfs_url(root_url, sid, 2, write_path)
+
+			page_links = get_links(root_url,sid_url,tag_dict['pages'])
+
+			if page_links is None or len(page_links)==0:
+				continue
+			# collect data for pages
+			for page_link in page_links:
+
+				if not is_valid_link(page_link):
+					continue
+				print 'url info : {}'.format(page_link)
+				bfs_url(root_url, page_link, 2, write_path)	
 
 # main code starts here
 main()
