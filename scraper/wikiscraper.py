@@ -110,8 +110,7 @@ def main():
 	tag_dict['pages'] = 'mw-pages'
 	tag_dict['subcats'] = 'mw-subcategories'
 
-
-
+	# Adding a map of categories to links
 	cat_map = {
 	'legal': '/wiki/Category:Government',
 	'health': '/wiki/Category:Health'
