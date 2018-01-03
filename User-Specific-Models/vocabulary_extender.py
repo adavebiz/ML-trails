@@ -10,11 +10,10 @@ import numpy as np
 
 class vocabulary_extender:
 
-    '''This calss is responsible for creating a extended vocabulary from sampled user keywords'''
+    '''This class is responsible for creating a extended vocabulary from sampled user keywords'''
 
     w2v_model = None
-    def __init__(self):
-        model_path='C:\\Users\\vingupta\\Downloads\\GoogleNews-vectors-negative300-SLIM.bin\\GoogleNews-vectors-negative300-SLIM.bin'
+    def __init__(self,model_path):
         self.w2v_model = KeyedVectors.load_word2vec_format(model_path, binary=True)  # C binary format
 
     def make_extended_vocabulary(self, user_vocab, topnwords):
@@ -24,7 +23,6 @@ class vocabulary_extender:
         for word in user_vocab:
 
             try:
-
                 most_similar_words = self.w2v_model.most_similar(word, topn=topnwords)
 
                 for similar_word in most_similar_words:

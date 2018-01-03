@@ -61,4 +61,7 @@ def merge_files(path):
 
 
 # main code runs here
-merge_files('../../scrapedata')
+AUTO_RUN = False
+
+if AUTO_RUN:
+	merge_files('../../scrapedata')
