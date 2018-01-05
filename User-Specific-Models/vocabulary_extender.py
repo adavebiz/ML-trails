@@ -13,8 +13,8 @@ class vocabulary_extender:
     '''This class is responsible for creating a extended vocabulary from sampled user keywords'''
 
     w2v_model = None
-    def __init__(self,model_path):
-        self.w2v_model = KeyedVectors.load_word2vec_format(model_path, binary=True)  # C binary format
+    def __init__(self,model_path,is_bin):
+        self.w2v_model = KeyedVectors.load_word2vec_format(model_path, binary=is_bin)  # C binary format
 
     def make_extended_vocabulary(self, user_vocab, topnwords):
 
