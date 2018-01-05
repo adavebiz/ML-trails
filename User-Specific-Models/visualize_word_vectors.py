@@ -43,10 +43,16 @@ def populate_category_vectors():
 		'health':1
 	}
 
-	is_bin_file = True
+	
+	model_dict = {
+		'custom' : 'legal.health.model',
+		'goog':  'GoogleNews-vectors-negative300-SLIM.bin'
+	}
 	root_path = '../../sampledata'
-	model_file = 'GoogleNews-vectors-negative300-SLIM.bin' #is_bin_file = True
-	model_path = '../../pretrained_models/'+model_file
+	
+	model_path = '../../pretrained_models/'+model_dict['goog']
+	is_bin_file = True
+
 	vectors_dict={}
 	vocab_n_words = 10
 
@@ -178,7 +184,7 @@ def plot_data_tsne(X,labels):
 # main
 (data_matrix, labels) = populate_category_vectors()
 
-X_rot = make_2d_proj(data_matrix,2)
+X_rot = make_2d_proj(data_matrix,20)
 y = DataFrame(labels)
 #plot_data(X_rot,y)
 

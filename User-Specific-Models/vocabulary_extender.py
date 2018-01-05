@@ -1,12 +1,6 @@
 from gensim import utils
-from gensim.models.doc2vec import LabeledSentence, TaggedDocument
-from gensim.models import Doc2Vec
-from random import shuffle
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics.pairwise import cosine_similarity
-from gensim.models import word2vec
+from gensim.models import Word2Vec
 from gensim.models.keyedvectors import KeyedVectors
-import numpy as np
 
 class vocabulary_extender:
 
@@ -14,7 +8,12 @@ class vocabulary_extender:
 
     w2v_model = None
     def __init__(self,model_path,is_bin):
-        self.w2v_model = KeyedVectors.load_word2vec_format(model_path, binary=is_bin)  # C binary format
+        
+        if is_bin:
+            self.w2v_model = KeyedVectors.load_word2vec_format(model_path, binary=is_bin)  # C binary format
+        else:
+            self.w2v_model = Word2Vec.load(model_path)
+        
 
     def make_extended_vocabulary(self, user_vocab, topnwords):
 
